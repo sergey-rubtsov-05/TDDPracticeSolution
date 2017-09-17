@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using FractionAddition.ConsoleApp;
 using Xunit;
 
 namespace Tests
@@ -10,31 +7,36 @@ namespace Tests
     public class WhenFractionIsParsing
     {
         [Fact]
-        public void ParseSimpleFraction()
+        public void ParseSimpleFractionFromStringWithSolidus()
         {
             var stringFraction = "1/2";
+
             var fraction = new Fraction(stringFraction);
 
             Assert.Equal(1, fraction.Numerator);
             Assert.Equal(2, fraction.Denominator);
         }
-    }
 
-    public class Fraction
-    {
-        public Fraction(string stringFraction)
+        [Fact]
+        public void ParseSimpleFractionFromStringWithIntValue()
         {
-            Numerator = 1;
-            Denominator = 2;
+            var stringFraction = "2";
+
+            var fraction = new Fraction(stringFraction);
+
+            Assert.Equal(2, fraction.Numerator);
+            Assert.Equal(1, fraction.Denominator);
         }
 
-        /// <summary>
-        /// Числитель
-        /// </summary>
-        public int Numerator { get; private set; }
-        /// <summary>
-        /// Знаменатель
-        /// </summary>
-        public int Denominator { get; private set; }
+        [Fact]
+        public void ParseFractionFromStringWith0InDenominatorThrowsException()
+        {
+            var stringFraction = "2/0";
+
+            Action action = () => new Fraction(stringFraction);
+
+            var exception = Assert.Throws<Exception>(action);
+            Assert.Equal("Denominator cannot be null", exception.Message);
+        }
     }
 }
