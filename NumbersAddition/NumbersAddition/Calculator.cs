@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 
 namespace NumbersAddition
 {
@@ -9,42 +6,41 @@ namespace NumbersAddition
     {
         public int Calculate(string expression)
         {
-            var indexOperation = IndexOfPlusOrMinus(expression);
-            int leftResult;
-            int rightResult;
-            if (indexOperation == -1)
+            var indexOfOperation = IndexOfOperation(expression);
+            if (indexOfOperation == -1)
+                return int.Parse(expression);
+
+            var operation = expression[indexOfOperation];
+
+            var leftResult = Calculate(expression.Substring(0, indexOfOperation));
+            var rightResult =
+                Calculate(expression.Substring("*/".Contains(operation) ? indexOfOperation + 1 : indexOfOperation));
+
+            switch (operation)
             {
-                indexOperation = expression.IndexOfAny(new[] { '*', '/' });
-                if (indexOperation == -1)
-                    return int.Parse(expression);
-
-                leftResult = Calculate(expression.Substring(0, indexOperation));
-                rightResult = Calculate(expression.Substring(indexOperation + 1));
-                return expression[indexOperation] == '/'
-                    ? leftResult / rightResult
-                    : leftResult * rightResult;
+                case '*':
+                    return leftResult * rightResult;
+                case '/':
+                    return leftResult / rightResult;
+                default:
+                    return leftResult + rightResult;
             }
-
-            leftResult = Calculate(expression.Substring(0, indexOperation));
-            rightResult = Calculate(expression.Substring(indexOperation));
-
-            return leftResult + rightResult;
         }
 
-        private int IndexOfPlusOrMinus(string expression)
+        private int IndexOfOperation(string expression)
         {
             for (var i = 1; i < expression.Length; i++)
             {
                 var charOfExpression = expression[i];
                 if (charOfExpression == '+' || charOfExpression == '-')
                 {
-                    if (expression[i-1] == '*' || expression[i-1] == '/')
+                    if (expression[i - 1] == '*' || expression[i - 1] == '/')
                         continue;
 
                     return i;
                 }
             }
-            return -1;
+            return expression.IndexOfAny(new[] { '*', '/' });
         }
     }
 }
